@@ -1,50 +1,60 @@
 function onReady () {
-  const ADD_TODO_FORM = document.getElementById('addToDoForm'); //calling the unique id from the HTML file
-  const NEW_TODO_TEXT = document.getElementById('newToDoText');
-  const TODO_LIST = document.getElementById('toDoList');
+  const ADD_FORM = document.getElementById('addToDoForm');
+  let id = 0;
+  let toDos = [] // an array of to-dos // Get the form that holds everything
 
-  ADD_TODO_FORM.addEventListener('submit', event => {
-    event.preventDefault();
-    // get the text
-    let title = NEW_TODO_TEXT.value;
+  function renderTheUI () {
+    const TODO_LIST = document.getElementById('toDoList');
+    TODO_LIST.textContent = '';
 
-    // create a new li
-    let newLi = document.createElement('li');
+    // for each item in the array toDo, apply this function
+    toDos.forEach(function (toDo) {
+      const newLi = document.createElement('li')
+      const checkbox = document.createElement('input')
+      checkbox.type = 'checkbox';
 
-    // create new input
-    let checkbox = document.createElement('input');
+      const deleteBTN = document.createElement('button')
+      deleteBTN.textContent = 'Delete'
 
-    // set the input's type to checkbox
-    checkbox.type = 'checkbox';
+      newLi.textContent = toDo.title // add the toDo's title text to newLi
 
-    // delete button
-    let deleteButton = document.createElement('button');
-    deleteButton.textContent= "Delete";
+      TODO_LIST.appendChild(newLi)
+      newLi.appendChild(checkbox)
+      newLi.appendChild(deleteBTN)
 
-    deleteButton.addEventListener('click', function(event){
-      // console.log(event);
-      // this.parentElement
-      TODO_LIST.removeChild(this.parentElement);
+      deleteBTN.addEventListener('click', () => {
+        toDos = toDos.filter(function(item) {
+          return item.id !== toDo.id
+        })
+        renderTheUI()
+      })
+
+    })
+  }
+
+  function createNewToDo () {
+    // Get the text for the title of each to-do
+    const NEW_TODO_TEXT = document.getElementById('newToDoText')
+    if (!NEW_TODO_TEXT.value) { return }
+    toDos.push({ // .push adds an element to the end of the array
+      title: NEW_TODO_TEXT.value, // assign the text of the to-do inut to a property
+      complete: false, // ????
+      id: id
     })
 
-    // set the title
-    newLi.textContent = title;
+    id++ // for each to-do we make, we are keeping track of the id starting with 0
 
-    // attach the checkbox to the li
-    newLi.appendChild(checkbox);
-
-    // attach the delete button to li
-    newLi.appendChild(deleteButton);
-
-    // attach the li to the ul
-    TODO_LIST.appendChild(newLi);
-
-    // empty the input
-    NEW_TODO_TEXT.value = "";
+    NEW_TODO_TEXT.value = '' // clear the text input for the user
+    renderTheUI()
+  }
+  ADD_FORM.addEventListener('submit', event => {
+    event.preventDefault()
+    createNewToDo()
   })
+  renderTheUI()
 }
 
 window.onload = function () {
-  alert('The window has loaded!');
-  onReady();
-};
+  // alert('The window has loaded!');
+  onReady()
+}
